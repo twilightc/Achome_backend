@@ -1,0 +1,10 @@
+﻿[*.cs]
+
+# CA1031: 不要攔截一般例外狀況類型
+dotnet_diagnostic.CA1031.severity = none
+
+# CA1707: 識別項不應包含底線
+dotnet_diagnostic.CA1707.severity = none
+
+# CA1056: URI 屬性不應為字串
+dotnet_diagnostic.CA1056.severity = none
