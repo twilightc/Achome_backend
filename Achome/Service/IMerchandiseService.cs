@@ -12,11 +12,10 @@ namespace Achome.Service
         Task<BaseResponse<List<CategoryListViewModel>>> GetCategoryListAsync();
         BaseResponse<List<MerchandiseViewModel>> GetCategoryDetailItems(string CategoryId, string CategoryDetailId);
         BaseResponse<MerchandiseWrapper> GetMerchandiseListBySearching(SearchRequestModel searchRequestModel);
-       
         BaseResponse<MerchandiseViewModel> GetMerchandise(string ItemId);
-
         BaseResponse<bool> AddToShoppingCart(ShoppingCart shoppingCartModel);
-
         BaseResponse<List<ShoppingCartWrapper>> GetShoppingCart(string account);
+        BaseResponse<bool> RemoveShoppingCartItem(List<RemoveShoppingCartItemRequestModel> items);
+
     }
 }

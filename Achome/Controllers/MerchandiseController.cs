@@ -83,5 +83,12 @@ namespace Achome.Controllers
         }
 
 
+        [HttpPut("[action]")]
+        public BaseResponse<bool> RemoveShoppingCartItem(List<RemoveShoppingCartItemRequestModel> items)
+        {
+            //var Account = "tychang";
+            //var Account = User.Claims.Where(c => c.Type.Equals(ClaimString.AccountName, StringComparison.InvariantCulture)).FirstOrDefault().Value;
+            return this.merchandiseService.RemoveShoppingCartItem(items);
+        }
     }
 }

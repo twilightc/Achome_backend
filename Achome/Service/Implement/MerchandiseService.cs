@@ -207,7 +207,7 @@ namespace Achome.Service.Implement
                               join c in context.MerchandiseSpec on new { pid = a.ProdId, sid = a.SpecId } equals new { pid = c.MerchandiseId, sid = c.SpecId } into SubCart
                               from c in SubCart.DefaultIfEmpty()
                               where a.Account == account
-                              select new ShoppingCartViewModel(b.MerchandiseTitle, b.OwnerAccount, b.MerchandiseId, (a.SpecId == 0) ? b.Price : c.Price, c.Spec1, c.Spec2, a.PurchaseQty)).ToList();
+                              select new ShoppingCartViewModel(b.MerchandiseTitle, b.OwnerAccount, b.MerchandiseId, (a.SpecId == 0) ? b.Price : c.Price, a.SpecId, c.Spec1, c.Spec2, a.PurchaseQty)).ToList();
 
 
                 List<string> sellerAccount = new List<string>();
@@ -220,22 +220,25 @@ namespace Achome.Service.Implement
                 }
 
                 List<ShoppingCartWrapper> shoppingCartWrapper = new List<ShoppingCartWrapper>();
-                foreach(var seller in sellerAccount)
+                ShoppingCartWrapper wrapper;
+                foreach (var seller in sellerAccount)
                 {
-                    ShoppingCartWrapper temp = new ShoppingCartWrapper() {
+                    wrapper = new ShoppingCartWrapper()
+                    {
                         SellerAccount = seller,
                         ShoppingCartViewModels = new List<ShoppingCartViewModel>(),
                     };
-                    shoppingCartWrapper.Add(temp);
+                    shoppingCartWrapper.Add(wrapper);
                 }
 
+                ShoppingCartViewModel temp;
                 result.ForEach(resultData =>
                 {
                     shoppingCartWrapper.ForEach(cartData =>
                     {
                         if (cartData.SellerAccount.Equals(resultData.OwnerAccount, StringComparison.InvariantCulture))
                         {
-                            var temp = new ShoppingCartViewModel(resultData.MerchandiseTitle, resultData.OwnerAccount, resultData.MerchandiseId, resultData.Price, resultData.Spec1, resultData.Spec2, resultData.PurchaseQty);
+                            temp = new ShoppingCartViewModel(resultData.MerchandiseTitle, resultData.OwnerAccount, resultData.MerchandiseId, resultData.Price, resultData.SpecId, resultData.Spec1, resultData.Spec2, resultData.PurchaseQty);
                             cartData.ShoppingCartViewModels.Add(temp);
                         }
                     });
@@ -245,10 +248,34 @@ namespace Achome.Service.Implement
             }
             catch (Exception ex)
             {
-
-                throw;
+                return new BaseResponse<List<ShoppingCartWrapper>>(false, "Cannot get list of shoppingCart", null);
             }
         }
+
+        public BaseResponse<bool> RemoveShoppingCartItem(List<RemoveShoppingCartItemRequestModel> items)
+        {
+            if (items == null)
+            {
+                throw new ArgumentNullException(nameof(items));
+            }
+
+            try
+            {
+                foreach (var item in items)
+                {
+                    ShoppingCart temp = context.ShoppingCart.Where(data => data.Account == item.Account && data.ProdId == item.ProdId && data.SpecId == item.SpecId).FirstOrDefault();
+                    context.ShoppingCart.Remove(temp);
+                }
+                context.SaveChanges();
+                return new BaseResponse<bool>(true, "Remove Item Success!", true);
+            }
+            catch (Exception)
+            {
+                return new BaseResponse<bool>(false, "Remove Item failed!", false);
+            }
+        }
+
+
     }
 
 
