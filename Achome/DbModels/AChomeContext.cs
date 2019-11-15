@@ -21,14 +21,17 @@ namespace Achome.DbModels
         public virtual DbSet<Merchandise> Merchandise { get; set; }
         public virtual DbSet<MerchandiseQa> MerchandiseQa { get; set; }
         public virtual DbSet<MerchandiseSpec> MerchandiseSpec { get; set; }
+        public virtual DbSet<SevenElevenShop> SevenElevenShop { get; set; }
         public virtual DbSet<ShoppingCart> ShoppingCart { get; set; }
+        public virtual DbSet<TaiwanCity> TaiwanCity { get; set; }
+        public virtual DbSet<TransportMethod> TransportMethod { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
             {
 //#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseSqlServer("Server=192.168.20.11;Database=AChome;User Id=sa;password=P@ssw0rd;MultipleActiveResultSets=True;");
+                optionsBuilder.UseSqlServer("Server=.\\MSSQLSERVER01;Database=AChome;User Id=sa;password=P@ssw0rd;MultipleActiveResultSets=True;");
             }
         }
 
@@ -151,6 +154,28 @@ namespace Achome.DbModels
                     .HasMaxLength(20);
             });
 
+            modelBuilder.Entity<SevenElevenShop>(entity =>
+            {
+                entity.HasKey(e => e.ShopNumber);
+
+                entity.Property(e => e.ShopNumber)
+                    .HasMaxLength(10)
+                    .ValueGeneratedNever();
+
+                entity.Property(e => e.Address)
+                    .IsRequired()
+                    .HasMaxLength(100);
+
+                entity.Property(e => e.ShopName)
+                    .IsRequired()
+                    .HasMaxLength(20);
+
+                entity.Property(e => e.Zip)
+                    .IsRequired()
+                    .HasColumnName("ZIP")
+                    .HasMaxLength(10);
+            });
+
             modelBuilder.Entity<ShoppingCart>(entity =>
             {
                 entity.HasKey(e => new { e.Account, e.ProdId, e.SpecId });
@@ -160,6 +185,28 @@ namespace Achome.DbModels
                 entity.Property(e => e.ProdId).HasMaxLength(50);
 
                 entity.Property(e => e.AddTime).HasColumnType("datetime");
+            });
+
+            modelBuilder.Entity<TaiwanCity>(entity =>
+            {
+                entity.HasKey(e => new { e.Zip, e.City, e.Area });
+
+                entity.Property(e => e.Zip).HasMaxLength(10);
+
+                entity.Property(e => e.City).HasMaxLength(10);
+
+                entity.Property(e => e.Area).HasMaxLength(10);
+            });
+
+            modelBuilder.Entity<TransportMethod>(entity =>
+            {
+                entity.HasKey(e => e.TransportId);
+
+                entity.Property(e => e.TransportId).ValueGeneratedNever();
+
+                entity.Property(e => e.TransportName)
+                    .IsRequired()
+                    .HasMaxLength(10);
             });
         }
     }

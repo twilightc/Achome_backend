@@ -25,7 +25,7 @@ namespace Achome.Controllers
         private readonly AChomeContext context;
         private readonly IMerchandiseService merchandiseService;
         private readonly IMapper mapper;
-        public MerchandiseController(IOptions<ApplicationSettings> appSettings, IMerchandiseService merchandiseService, AChomeContext context, IMapper mapper)
+        public MerchandiseController(IOptions<ApplicationSettings> appSettings, IMerchandiseService merchandiseService ,AChomeContext context, IMapper mapper)
         {
             this.appSettings = appSettings?.Value;
             this.context = context;
@@ -59,36 +59,6 @@ namespace Achome.Controllers
             return this.merchandiseService.GetMerchandiseListBySearching(searchRequestModel);
         }
 
-        [Authorize]
-        [HttpPost("[action]")]
-        public BaseResponse<bool> AddToShoppingCart([FromBody]ShoppingCart shoppingCartModel)
-        {
-            if(shoppingCartModel == null)
-            {
-                return new BaseResponse<bool>(false, "model data is null", default);
-            }
-            var Account = User.Claims.Where(c => c.Type.Equals(ClaimString.AccountName,StringComparison.InvariantCulture)).FirstOrDefault().Value;
-            shoppingCartModel.Account = Account;
-            
-            return this.merchandiseService.AddToShoppingCart(shoppingCartModel);
-        }
-
-        [Authorize]
-        [HttpGet("[action]")]
-        public BaseResponse<List<ShoppingCartWrapper>> GetShoppingCart()
-        {
-            //var Account = "tychang";
-            var Account = User.Claims.Where(c => c.Type.Equals(ClaimString.AccountName, StringComparison.InvariantCulture)).FirstOrDefault().Value;
-            return this.merchandiseService.GetShoppingCart(Account);
-        }
-
-
-        [HttpPut("[action]")]
-        public BaseResponse<bool> RemoveShoppingCartItem(List<RemoveShoppingCartItemRequestModel> items)
-        {
-            //var Account = "tychang";
-            //var Account = User.Claims.Where(c => c.Type.Equals(ClaimString.AccountName, StringComparison.InvariantCulture)).FirstOrDefault().Value;
-            return this.merchandiseService.RemoveShoppingCartItem(items);
-        }
+        
     }
 }

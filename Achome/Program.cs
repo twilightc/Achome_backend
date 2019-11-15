@@ -7,6 +7,8 @@ using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Serilog;
+using Serilog.Events;
 
 namespace Achome
 {
@@ -14,12 +16,31 @@ namespace Achome
     {
         public static void Main(string[] args)
         {
-            CreateWebHostBuilder(args).Build().Run();
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Debug()
+                .MinimumLevel.Override("Microsoft", LogEventLevel.Fatal)
+                .Enrich.FromLogContext().WriteTo
+                .RollingFile("Log/log-{Date}.txt", shared: true, outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level}] {Message}{NewLine}{Exception}")
+                .CreateLogger();
+            try
+            {
+                Log.Information("Starting up");
+                CreateWebHostBuilder(args).Build().Run();
+            }
+            catch (Exception ex)
+            {
+                Log.Fatal(ex, "Application start-up failed");
+            }
+            finally
+            {
+                Log.CloseAndFlush();
+            }
         }
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
                 //.UseWebRoot("img")
-                .UseStartup<Startup>();
+                .UseStartup<Startup>()
+                .UseSerilog();
     }
 }

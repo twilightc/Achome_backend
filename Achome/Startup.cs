@@ -76,6 +76,7 @@ namespace Achome
             services.AddDbContext<AChomeContext>(options => options.UseSqlServer(settings.IdentityConnection));
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IMerchandiseService, MerchandiseService>();
+            services.AddScoped<ICheckoutService, CheckoutService>();
 
             services.AddSwaggerGen(c =>
             {
@@ -116,6 +117,9 @@ namespace Achome
                 cfg.CreateMap<Merchandise, MerchandiseViewModel>(); 
                 cfg.CreateMap<MerchandiseSpec, MerchandiseSpecViewModel>();
                 cfg.CreateMap<MerchandiseQa, MerchandiseQaViewModel>();
+                cfg.CreateMap<TransportMethod, TransportMethodViewModel>();
+                cfg.CreateMap<TaiwanCity, TaiwanCityViewModel>();
+                cfg.CreateMap<SevenElevenShop, SevenElevenShopViewModel>();
             });
             IMapper iMapper = config.CreateMapper();
             services.AddSingleton(iMapper);
