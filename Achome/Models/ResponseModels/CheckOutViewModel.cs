@@ -12,12 +12,12 @@ namespace Achome.Models.ResponseModels
         public int Fee { get; set; }
     }
 
-    public class TaiwanCityViewModel
-    {
-        public string City { get; set; }
-        public string Area { get; set; }
-        public string Zip { get; set; }
-    }
+    //public class TaiwanCityViewModel
+    //{
+    //    public string City { get; set; }
+    //    public string Area { get; set; }
+    //    public string Zip { get; set; }
+    //}
 
     public class SevenElevenShopViewModel
     {
@@ -26,5 +26,16 @@ namespace Achome.Models.ResponseModels
         public string ShopName { get; set; }
         public string Address { get; set; }
 
+    }
+
+    public class AreaZip
+    {
+        public AreaZip(string area, string zip)
+        {
+            Area = area;
+            Zip = zip;
+        }
+        public string Area { get; set; }
+        public string Zip { get; set; }
     }
 }

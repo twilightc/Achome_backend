@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Achome.Models.RequestModels
 {
-    public class RemoveShoppingCartItemRequestModel
+    public class PendedShoppingCartItemRequestModel
     {
         public string Account { get; set; }
         public string ProdId { get; set; }

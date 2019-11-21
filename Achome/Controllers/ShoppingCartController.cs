@@ -56,11 +56,11 @@ namespace Achome.Controllers
 
         [Authorize]
         [HttpPut("[action]")]
-        public BaseResponse<bool> RemoveShoppingCartItem(List<RemoveShoppingCartItemRequestModel> items)
+        public BaseResponse<bool> RemoveShoppingCartItem(List<PendedShoppingCartItemRequestModel> items)
         {
             //var Account = "tychang";
             var Account = User.Claims.Where(c => c.Type.Equals(ClaimString.AccountName, StringComparison.InvariantCulture)).FirstOrDefault().Value;
-            return this.shoppingCartService.RemoveShoppingCartItem(items);
+            return this.shoppingCartService.RemoveShoppingCartItem(items, Account);
         }
     }
 }

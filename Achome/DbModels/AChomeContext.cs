@@ -21,6 +21,8 @@ namespace Achome.DbModels
         public virtual DbSet<Merchandise> Merchandise { get; set; }
         public virtual DbSet<MerchandiseQa> MerchandiseQa { get; set; }
         public virtual DbSet<MerchandiseSpec> MerchandiseSpec { get; set; }
+        public virtual DbSet<Order> Order { get; set; }
+        public virtual DbSet<OrderDetail> OrderDetail { get; set; }
         public virtual DbSet<SevenElevenShop> SevenElevenShop { get; set; }
         public virtual DbSet<ShoppingCart> ShoppingCart { get; set; }
         public virtual DbSet<TaiwanCity> TaiwanCity { get; set; }
@@ -30,7 +32,7 @@ namespace Achome.DbModels
         {
             if (!optionsBuilder.IsConfigured)
             {
-//#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
                 optionsBuilder.UseSqlServer("Server=.\\MSSQLSERVER01;Database=AChome;User Id=sa;password=P@ssw0rd;MultipleActiveResultSets=True;");
             }
         }
@@ -152,6 +154,44 @@ namespace Achome.DbModels
                 entity.Property(e => e.Spec2)
                     .IsRequired()
                     .HasMaxLength(20);
+            });
+
+            modelBuilder.Entity<Order>(entity =>
+            {
+                entity.HasKey(e => e.OrderGuid);
+
+                entity.Property(e => e.OrderGuid)
+                    .HasMaxLength(50)
+                    .ValueGeneratedNever();
+
+                entity.Property(e => e.OrderAccount)
+                    .IsRequired()
+                    .HasMaxLength(20);
+
+                entity.Property(e => e.OrderingTime).HasColumnType("datetime");
+
+                entity.Property(e => e.ReceiverAddress)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.ReceiverName)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.ReceiverPhone)
+                    .IsRequired()
+                    .HasMaxLength(20);
+            });
+
+            modelBuilder.Entity<OrderDetail>(entity =>
+            {
+                entity.HasKey(e => new { e.OrderGuid, e.Seq });
+
+                entity.Property(e => e.OrderGuid).HasMaxLength(50);
+
+                entity.Property(e => e.ProdId)
+                    .IsRequired()
+                    .HasMaxLength(50);
             });
 
             modelBuilder.Entity<SevenElevenShop>(entity =>

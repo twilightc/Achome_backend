@@ -12,6 +12,6 @@ namespace Achome.Service
     {
         BaseResponse<bool> AddToShoppingCart(ShoppingCart shoppingCartModel);
         BaseResponse<List<ShoppingCartWrapper>> GetShoppingCart(string account);
-        BaseResponse<bool> RemoveShoppingCartItem(List<RemoveShoppingCartItemRequestModel> items);
+        BaseResponse<bool> RemoveShoppingCartItem(List<PendedShoppingCartItemRequestModel> items,string account);
     }
 }

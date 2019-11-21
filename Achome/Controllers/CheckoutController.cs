@@ -1,9 +1,12 @@
 ﻿using Achome.DbModels;
 using Achome.Models;
+using Achome.Models.RequestModels;
 using Achome.Models.ResponseModels;
 using Achome.Service;
 using Achome.Service.Implement;
+using Achome.Util;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -39,7 +42,7 @@ namespace Achome.Controllers
         }
 
         [HttpGet("[action]")]
-        public BaseResponse<List<TaiwanCityViewModel>> GetTaiwanCityList()
+        public BaseResponse<Dictionary<string, List<AreaZip>>> GetTaiwanCityList()
         {
             return this.checkoutService.GetTaiwanCityList();
         }
@@ -48,6 +51,15 @@ namespace Achome.Controllers
         public BaseResponse<List<SevenElevenShopViewModel>> GetSevenElevenShop()
         {
             return this.checkoutService.GetSevenElevenShop();
+        }
+
+        [Authorize]
+        [HttpPost("[action]")]
+        public BaseResponse<bool> CheckingOut([FromBody]CheckOutOrderRawReqestModel checkoutOrder)
+        {
+            //var Account = "tychang";
+            var account = User.Claims.Where(c => c.Type.Equals(ClaimString.AccountName, StringComparison.InvariantCulture)).FirstOrDefault().Value;
+            return this.checkoutService.CheckingOut(checkoutOrder, account);
         }
     }
 }

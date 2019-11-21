@@ -77,6 +77,7 @@ namespace Achome
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IMerchandiseService, MerchandiseService>();
             services.AddScoped<ICheckoutService, CheckoutService>();
+            services.AddScoped<IShoppingCartService, ShoppingCartService>();
 
             services.AddSwaggerGen(c =>
             {
@@ -118,7 +119,6 @@ namespace Achome
                 cfg.CreateMap<MerchandiseSpec, MerchandiseSpecViewModel>();
                 cfg.CreateMap<MerchandiseQa, MerchandiseQaViewModel>();
                 cfg.CreateMap<TransportMethod, TransportMethodViewModel>();
-                cfg.CreateMap<TaiwanCity, TaiwanCityViewModel>();
                 cfg.CreateMap<SevenElevenShop, SevenElevenShopViewModel>();
             });
             IMapper iMapper = config.CreateMapper();

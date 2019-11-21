@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace Achome.Service.Implement
 {
-    public class ShoppingCartService: IShoppingCartService
+    public class ShoppingCartService : IShoppingCartService
     {
         private readonly ApplicationSettings appSettings;
         private readonly AChomeContext context;
@@ -35,7 +35,7 @@ namespace Achome.Service.Implement
                 }
                 shoppingCartModel.AddTime = DateTime.Now;
 
-                var result = context.ShoppingCart.Where(data => data.ProdId == shoppingCartModel.ProdId && data.SpecId == shoppingCartModel.SpecId).FirstOrDefault();
+                var result = context.ShoppingCart.Where(data => data.Account == shoppingCartModel.Account && data.ProdId == shoppingCartModel.ProdId && data.SpecId == shoppingCartModel.SpecId).FirstOrDefault();
                 if (result == null)
                 {
                     context.ShoppingCart.Add(shoppingCartModel);
@@ -104,13 +104,13 @@ namespace Achome.Service.Implement
 
                 return new BaseResponse<List<ShoppingCartWrapper>>(true, "List of shoppingCart", shoppingCartWrapper);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return new BaseResponse<List<ShoppingCartWrapper>>(false, "Cannot get list of shoppingCart", null);
             }
         }
 
-        public BaseResponse<bool> RemoveShoppingCartItem(List<RemoveShoppingCartItemRequestModel> items)
+        public BaseResponse<bool> RemoveShoppingCartItem(List<PendedShoppingCartItemRequestModel> items, string account)
         {
             if (items == null)
             {
@@ -121,7 +121,7 @@ namespace Achome.Service.Implement
             {
                 foreach (var item in items)
                 {
-                    ShoppingCart temp = context.ShoppingCart.Where(data => data.Account == item.Account && data.ProdId == item.ProdId && data.SpecId == item.SpecId).FirstOrDefault();
+                    ShoppingCart temp = context.ShoppingCart.Where(data => data.Account == account && data.ProdId == item.ProdId && data.SpecId == item.SpecId).FirstOrDefault();
                     context.ShoppingCart.Remove(temp);
                 }
                 context.SaveChanges();
