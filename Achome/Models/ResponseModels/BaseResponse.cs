@@ -7,6 +7,12 @@ namespace Achome.Models.ResponseModels
 {
     public class BaseResponse<T>
     {
+        public BaseResponse()
+        {
+            Success = false;
+            Msg = "";
+            Data = default;
+        }
         public BaseResponse(bool success, string msg, T data)
         {
             Success = success;

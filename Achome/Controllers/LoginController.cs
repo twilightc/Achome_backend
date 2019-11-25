@@ -45,7 +45,6 @@ namespace Achome.Controllers
                     {
                         new Claim(ClaimString.AccountName,loginStatus.User.AccountName),
                         new Claim(ClaimString.UserName,loginStatus.User.UserName),
-
                     }),
                     Expires = DateTime.UtcNow.AddDays(1),
                     SigningCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256Signature)

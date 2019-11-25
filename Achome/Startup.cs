@@ -78,6 +78,7 @@ namespace Achome
             services.AddScoped<IMerchandiseService, MerchandiseService>();
             services.AddScoped<ICheckoutService, CheckoutService>();
             services.AddScoped<IShoppingCartService, ShoppingCartService>();
+            services.AddScoped<IEstablishedOrderService, EstablishedOrderService>();
 
             services.AddSwaggerGen(c =>
             {

@@ -142,7 +142,7 @@ namespace Achome.Service.Implement
             catch (Exception ex)
             {
                 logger.LogError($"{ex.Message}");
-                return new BaseResponse<bool>(false, "Checkout data pattern failed", false);
+                return new BaseResponse<bool>(false, "Checkout data pattern failed", default);
             }
         }
     }
