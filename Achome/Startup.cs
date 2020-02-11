@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Achome.DbModels;
+﻿using Achome.DbModels;
 using Achome.Models;
+using Achome.Models.RequestModels;
 using Achome.Models.ResponseModels;
 using Achome.Service;
 using Achome.Service.Implement;
@@ -13,16 +8,17 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SpaServices.AngularCli;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json.Serialization;
+using System;
+using System.IO;
+using System.Text;
 
 namespace Achome
 {
@@ -43,7 +39,8 @@ namespace Achome
                 options.AddPolicy(
                     "CorsPolicy",
                     builder => builder
-                        .AllowAnyOrigin()
+                        .WithOrigins("http://nexifytw.mynetgear.com:9527", "http://localhost:4200", "http://localhost:3000")
+                        //.AllowAnyOrigin()
                         .AllowAnyHeader()
                         .AllowAnyMethod());
             });
@@ -109,18 +106,23 @@ namespace Achome
                 //});
             });
             services.AddMvc().AddJsonOptions(options => { options.SerializerSettings.ContractResolver = new DefaultContractResolver(); });
-
+            services.AddSpaStaticFiles(configuration =>
+            {
+                configuration.RootPath = "ClientApp/dist";
+            });
 
         }
         public static void AddMapper(IServiceCollection services)
         {
             var config = new MapperConfiguration(cfg =>
             {
-                cfg.CreateMap<Merchandise, MerchandiseViewModel>(); 
+                cfg.CreateMap<Merchandise, MerchandiseViewModel>();
                 cfg.CreateMap<MerchandiseSpec, MerchandiseSpecViewModel>();
                 cfg.CreateMap<MerchandiseQa, MerchandiseQaViewModel>();
                 cfg.CreateMap<TransportMethod, TransportMethodViewModel>();
                 cfg.CreateMap<SevenElevenShop, SevenElevenShopViewModel>();
+                cfg.CreateMap<AddMerchandiseRequestModel, Merchandise>();
+                cfg.CreateMap<AddSpecModel, MerchandiseSpec>();
             });
             IMapper iMapper = config.CreateMapper();
             services.AddSingleton(iMapper);
@@ -129,7 +131,6 @@ namespace Achome
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public static void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            app.UseStaticFiles();
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -138,6 +139,7 @@ namespace Achome
             {
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
+                app.UseDeveloperExceptionPage();
             }
 
             app.UseCors("CorsPolicy");
@@ -153,7 +155,31 @@ namespace Achome
             });
             app.UseAuthentication();
             app.UseHttpsRedirection();
-            app.UseMvc();
+
+            app.UseStaticFiles();
+            app.UseSpaStaticFiles();
+            app.UseMvcWithDefaultRoute();
+            //app.UseMvc();
+
+            app.UseMvc(routes =>
+            {
+                routes.MapRoute(
+                    name: "default",
+                    template: "{controller}/{action=Index}/{id?}");
+            });
+
+            app.UseSpa(spa =>
+            {
+                // To learn more about options for serving an Angular SPA from ASP.NET Core,
+                // see https://go.microsoft.com/fwlink/?linkid=864501
+
+                spa.Options.SourcePath = "ClientApp";
+
+                if (env.IsDevelopment())
+                {
+                    spa.UseAngularCliServer(npmScript: "start");
+                }
+            });
         }
     }
 }

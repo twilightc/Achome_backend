@@ -32,7 +32,7 @@ namespace Achome.DbModels
         {
             if (!optionsBuilder.IsConfigured)
             {
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
+//#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
                 optionsBuilder.UseSqlServer("Server=.\\MSSQLSERVER01;Database=AChome;User Id=sa;password=P@ssw0rd;MultipleActiveResultSets=True;");
             }
         }
@@ -111,11 +111,11 @@ namespace Achome.DbModels
 
                 entity.Property(e => e.ImagePath).HasMaxLength(50);
 
+                entity.Property(e => e.MerchandiseContent).IsRequired();
+
                 entity.Property(e => e.MerchandiseTitle)
                     .IsRequired()
                     .HasMaxLength(100);
-
-                entity.Property(e => e.MerhandiseContent).IsRequired();
 
                 entity.Property(e => e.OwnerAccount)
                     .IsRequired()

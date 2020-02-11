@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
@@ -12,6 +13,8 @@ using Achome.Models.ResponseModels;
 using Achome.Util;
 using AutoMapper;
 using Dapper;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -22,15 +25,15 @@ namespace Achome.Service.Implement
         private readonly ApplicationSettings appSettings;
         private readonly AChomeContext context;
         private readonly IMapper mapper;
-        public MerchandiseService(IOptions<ApplicationSettings> appSettings, AChomeContext context, IMapper mapper, ILogger<MerchandiseService> logger)
+        private readonly string _folder;
+        public MerchandiseService(IOptions<ApplicationSettings> appSettings, AChomeContext context, IMapper mapper, ILogger<MerchandiseService> logger, IHostingEnvironment env)
         {
             logger.LogDebug("MerchandiseService");
             this.appSettings = appSettings?.Value;
             this.context = context;
             this.mapper = mapper;
+            this._folder = $@"{env.WebRootPath}\img";
         }
-
-
 
         public async Task<BaseResponse<List<CategoryListViewModel>>> GetCategoryListAsync()
         {
@@ -167,5 +170,94 @@ namespace Achome.Service.Implement
                 return new BaseResponse<MerchandiseWrapper>(false, "cannot get merchandise list", null);
             }
         }
+
+        public BaseResponse<bool> PostAskingForm(MerchandiseQa form)
+        {
+            try
+            {
+                if (form == null)
+                {
+                    throw new ArgumentNullException(nameof(form));
+                }
+
+
+                var result = context.MerchandiseQa.Where(data => data.MerchandiseId == form.MerchandiseId).ToList();
+
+
+                if (result == null)
+                {
+                    context.MerchandiseQa.Add(form);
+                }
+                else
+                {
+                    form.AskingTime = DateTime.Now;
+                    form.Seq = result.Count + 1;
+                    context.MerchandiseQa.Add(form);
+                }
+
+
+                context.SaveChanges();
+                return new BaseResponse<bool>(true, "發佈提問完成!", default);
+            }
+            catch (Exception ex)
+            {
+                return new BaseResponse<bool>(false, ex.Message, default);
+            }
+        }
+
+        public async Task<BaseResponse<bool>> AddMerchandise(AddMerchandiseRequestModel addMerchandiseRequestModel, string account)
+        {
+            string path = "";
+            try
+            {
+                if (addMerchandiseRequestModel == null)
+                {
+                    throw new ArgumentNullException(nameof(addMerchandiseRequestModel));
+                }
+
+                string guid = Guid.NewGuid().ToString();
+                var size = addMerchandiseRequestModel.MerchandisePhotos.Length;
+                if (size > 0)
+                {
+                    path = $@"{_folder}\{guid}.{addMerchandiseRequestModel.MerchandisePhotos.FileName.Split(".")[1]}";
+                    using (var stream = new FileStream(path, FileMode.Create))
+                    {
+                        await addMerchandiseRequestModel.MerchandisePhotos.CopyToAsync(stream).ConfigureAwait(false);
+                    }
+                }
+                var toBeAddItem = mapper.Map<AddMerchandiseRequestModel, Merchandise>(addMerchandiseRequestModel);
+                toBeAddItem.MerchandiseId = guid;
+                toBeAddItem.OwnerAccount = account;
+                toBeAddItem.ImagePath = $"{guid}.{addMerchandiseRequestModel.MerchandisePhotos.FileName.Split(".")[1]}";
+
+                context.Merchandise.Add(toBeAddItem);
+                if (addMerchandiseRequestModel.EnableSpec)
+                {
+                    int specIndex = 1;
+                    var specs = addMerchandiseRequestModel.SpecList.Select(data =>
+                    {
+                        var temp = mapper.Map<AddSpecModel, MerchandiseSpec>(data);
+                        temp.MerchandiseId = guid;
+                        temp.SpecId = specIndex++;
+                        return temp;
+                    });
+
+                    context.MerchandiseSpec.AddRange(specs);
+                }
+
+                context.SaveChanges();
+                return new BaseResponse<bool>(true, "上傳成功", true);
+            }
+            catch (Exception ex)
+            {
+                if(File.Exists(path))
+                {
+                    File.Delete(path);
+                }
+                return new BaseResponse<bool>(false, "上傳失敗", false);
+            }
+        }
+
+
     }
 }

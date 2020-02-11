@@ -9,7 +9,7 @@ namespace Achome.DbModels
         public string OwnerAccount { get; set; }
         public int Price { get; set; }
         public string MerchandiseTitle { get; set; }
-        public string MerhandiseContent { get; set; }
+        public string MerchandiseContent { get; set; }
         public int SoldQty { get; set; }
         public int RemainingQty { get; set; }
         public string CategoryId { get; set; }

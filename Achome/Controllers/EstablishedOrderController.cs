@@ -35,12 +35,12 @@ namespace Achome.Controllers
         }
 
 
-        //[Authorize]
+        [Authorize]
         [HttpGet("[action]")]
         public async Task<EstablishOrderResponse> GetEstablishOrderList()
         {
-            var account = "a123";
-            //var account = User.Claims.Where(c => c.Type.Equals(ClaimString.AccountName, StringComparison.InvariantCulture)).FirstOrDefault().Value;
+            //var account = "a123";
+            var account = User.Claims.Where(c => c.Type.Equals(ClaimString.AccountName, StringComparison.InvariantCulture)).FirstOrDefault().Value;
             return await establishedOrderService.GetEstablishOrderList(account).ConfigureAwait(false);
         }
 

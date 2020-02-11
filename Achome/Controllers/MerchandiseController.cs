@@ -7,6 +7,8 @@ using Achome.Util;
 using AutoMapper;
 using Dapper;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using System;
@@ -25,12 +27,15 @@ namespace Achome.Controllers
         private readonly AChomeContext context;
         private readonly IMerchandiseService merchandiseService;
         private readonly IMapper mapper;
+        
+
         public MerchandiseController(IOptions<ApplicationSettings> appSettings, IMerchandiseService merchandiseService ,AChomeContext context, IMapper mapper)
         {
             this.appSettings = appSettings?.Value;
             this.context = context;
             this.merchandiseService = merchandiseService;
             this.mapper = mapper;
+            
         }
 
         [HttpGet("[action]")]
@@ -51,6 +56,19 @@ namespace Achome.Controllers
             return this.merchandiseService.GetMerchandise(ItemId);
         }
 
+        [HttpPost("[action]")]
+        public BaseResponse<bool> PostAskingForm([FromBody]MerchandiseQa form)
+        {
+            if (form == null)
+            {
+                return new BaseResponse<bool>(false, "model data is null", default);
+            }
+            var Account = User.Claims.Where(c => c.Type.Equals(ClaimString.AccountName, StringComparison.InvariantCulture)).FirstOrDefault().Value;
+            form.QuestionAccount = Account;
+
+            return this.merchandiseService.PostAskingForm(form);
+        }
+
 
         [HttpPost("[action]")]
         public BaseResponse<MerchandiseWrapper> GetMerchandiseListBySearching([FromBody]SearchRequestModel searchRequestModel)
@@ -60,5 +78,12 @@ namespace Achome.Controllers
         }
 
         
+        [HttpPost("[action]")]
+        public async Task<BaseResponse<bool>> AddMerchandise([FromForm]AddMerchandiseRequestModel addMerchandiseRequestModel)
+        {
+            string account = "tychang";
+            return await merchandiseService.AddMerchandise( addMerchandiseRequestModel, account).ConfigureAwait(false);
+        }
+
     }
 }
