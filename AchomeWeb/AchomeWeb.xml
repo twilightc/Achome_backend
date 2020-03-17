@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>AchomeWeb</name>
+    </assembly>
+    <members>
+        <member name="M:AchomeWeb.Controllers.MerchandiseController.GetBSMerhandiseListDetail(AchomeModels.Models.RequestModels.BackStageSearchModel)">
+            <summary>
+            Get backstage's merchandise list by specfic condition
+            </summary>
+            <param name="backStageSearchModel"></param>
+            <returns></returns>
+        </member>
+        <member name="M:AchomeWeb.Controllers.MerchandiseController.EditBSMerchandise(AchomeModels.Models.ResponseModels.MerchandiseViewModel)">
+            <summary>
+            Edit BackStage's merchandise info
+            </summary>
+            <param name="merchandise"></param>
+            <returns></returns>
+        </member>
+    </members>
+</doc>
